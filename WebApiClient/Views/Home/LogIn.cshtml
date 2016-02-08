@@ -1,0 +1,160 @@
+﻿@*@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}*@
+
+@*<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong class="">Login</strong>
+
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="inputEmail3" class="col-sm-3 control-label">Email</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control" id="inputEmail3" placeholder="Email" required="" value="mail@mail.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPassword3" class="col-sm-3 control-label">Password</label>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control" id="inputPassword3" placeholder="Password" required="" value="password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-9">
+                                <div class="checkbox">
+                                    <label class="">
+                                        <input type="checkbox" class="">Remember me
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group last">
+                            <div class="col-sm-offset-3 col-sm-9">
+                                <button type="submit" class="btn btn-success btn-sm" onclick="logIn()">Sign in</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<script>
+    $(document).ready(function () {
+        $("a").load(function () {
+        });
+    });
+</script>
+
+
+<a href="#" data-toggle="modal" data-target="#login-modal" style="visibility: hidden">Login</a>
+
+<div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="loginmodal-container">
+            <h1>Login to Your Account</h1><br>
+            <form>
+                <input type="text" name="user" placeholder="Username">
+                <input type="password" name="pass" placeholder="Password">
+                <input type="submit" name="login" class="login loginmodal-submit" value="Login">
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@*<table>
+    <tr>
+        <td>
+            E-Mail:
+        </td>
+        <td>
+            <input type="email" id="inputMail" value="mail@mail.com"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Password:
+        </td>
+        <td>
+            <input type="password" id="inputPassword" value="password" />
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="button" onclick="logIn()" value="Log In" />
+        </td>
+    </tr>
+</table>*@
+
+@section scripts {
+    <script>
+        //var urlPrefix = 'http://193.140.214.49:4444';
+        //var urlPrefix = 'http://193.140.214.49:4445';
+        var urlPrefix = 'http://localhost:65365';
+
+        var loginData = {
+            grant_type: 'password',
+            username: $('#inputMail').val(),
+            password: $('#inputPassword').val()
+        };
+
+        var apitoken;
+
+        function logIn() {
+            var method = $('#method').val();
+
+            var xhr = createCORSRequest(method, urlPrefix + '/Token');
+            if (!xhr) {
+                throw new Error('CORS not supported');
+            }
+
+            xhr.send();
+
+            $.ajax({
+                type: 'POST',//method,
+                url: urlPrefix + '/Token',
+                data: loginData
+                //dataType: 'json'
+            }).done(function (data) {
+                //$('#value1').text(data.access_token);
+                apitoken = data.access_token;
+                sessionStorage.setItem('apitoken', apitoken);
+                window.location.href = "/Home/Index";
+            }).error(function (jqXHR, textStatus, errorThrown) {
+                $('#value1').text(jqXHR.responseText || textStatus);
+            });
+        }
+
+        function createCORSRequest(method, url) {
+            var xhr = new XMLHttpRequest();
+            if ("withCredentials" in xhr) {
+
+                // Check if the XMLHttpRequest object has a "withCredentials" property.
+                // "withCredentials" only exists on XMLHTTPRequest2 objects.
+                xhr.open(method, url, true);
+                xhr.withCredentials = true;
+
+            } else if (typeof XDomainRequest != "undefined") {
+
+                // Otherwise, check if XDomainRequest.
+                // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+                xhr = new XDomainRequest();
+                xhr.open(method, url);
+
+            } else {
+
+                // Otherwise, CORS is not supported by the browser.
+                xhr = null;
+
+            }
+            return xhr;
+        }
+    </script>
+}

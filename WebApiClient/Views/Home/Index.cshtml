@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+
+        <ul>
+            <li>
+                <h4>Project</h4>
+                <a onclick="sendRequest()">/api/projects</a>
+            </li>
+            <li>
+                <h4>Task</h4>
+                <a onclick="sendRequest()">/api/tasks</a>
+            </li>
+            <li>
+                <h4>Resource</h4>
+                <a onclick="sendRequest()">/api/resources</a>
+            </li>
+            <li>
+                <h4>Location</h4>
+                <a onclick="sendRequest()">/api/locations</a>
+            </li>
+            <li>
+                <h4>Equipment</h4>
+                <a onclick="sendRequest()">/api/equipments</a>
+            </li>
+        </ul>
+
+@*<select id="method">
+        <option value="get">GET</option>
+        <option value="post">POST</option>
+        <option value="put">PUT</option>
+    </select>
+    <input type="button" value="LogIn" onclick="logIn()" />
+    <input type="button" value="Send Request" onclick="sendRequest()" />*@
+@*<span id='value1'>(Result)</span>*@
+<span id='value2'>(Result)</span>
+
+<script src="~/Scripts/angular.js"></script>
+
+
+@section scripts {
+    <script>
+        //var urlPrefix = 'http://193.140.214.49:4444';
+        //var urlPrefix = 'http://193.140.214.49:4445';
+        var urlPrefix = 'http://localhost:65365';
+
+        var loginData = {
+            grant_type: 'password',
+            username: 'mail@mail.com',
+            password: 'password'
+        };
+
+        var apitoken = sessionStorage.getItem('apitoken');
+        var a = '';
+        function sendRequest() {
+            var headers = {};
+            if (apitoken) {
+                headers.Authorization = 'Bearer ' + apitoken;
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: urlPrefix + '/api/location',
+                headers: headers
+            }).done(function (data) {
+                $('#value2').text(JSON.stringify(data));
+            }).error(function (jqXHR, textStatus, errorThrown) {
+                $('#value2').text(jqXHR.responseText || textStatus);
+            });
+        };
+
+        function logIn() {
+            var method = $('#method').val();
+
+            var xhr = createCORSRequest(method, urlPrefix + '/Token');
+            if (!xhr) {
+                throw new Error('CORS not supported');
+            }
+
+            xhr.send();
+
+            $.ajax({
+                type: method,
+                url: urlPrefix + '/Token',
+                data: loginData,
+                dataType: 'json'
+            }).done(function (data) {
+                //$('#value1').text(data.access_token);
+                apitoken = data.access_token;
+            }).error(function (jqXHR, textStatus, errorThrown) {
+                $('#value1').text(jqXHR.responseText || textStatus);
+            });
+        }
+
+        function createCORSRequest(method, url) {
+            var xhr = new XMLHttpRequest();
+            if ("withCredentials" in xhr) {
+
+                // Check if the XMLHttpRequest object has a "withCredentials" property.
+                // "withCredentials" only exists on XMLHTTPRequest2 objects.
+                xhr.open(method, url, true);
+                xhr.withCredentials = true;
+
+            } else if (typeof XDomainRequest != "undefined") {
+
+                // Otherwise, check if XDomainRequest.
+                // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+                xhr = new XDomainRequest();
+                xhr.open(method, url);
+
+            } else {
+
+                // Otherwise, CORS is not supported by the browser.
+                xhr = null;
+
+            }
+            return xhr;
+        }
+    </script>
+}
