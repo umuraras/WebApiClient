@@ -45,7 +45,7 @@
     </div>
 </div>*@
 
-<script>
+@*<script>
     $(document).ready(function () {
         $("a").load(function () {
         });
@@ -66,10 +66,10 @@
             </form>
         </div>
     </div>
-</div>
+</div>*@
 
 
-@*<table>
+<table>
     <tr>
         <td>
             E-Mail:
@@ -91,7 +91,7 @@
             <input type="button" onclick="logIn()" value="Log In" />
         </td>
     </tr>
-</table>*@
+</table>
 
 @section scripts {
     <script>
@@ -121,9 +121,9 @@
                 type: 'POST',//method,
                 url: urlPrefix + '/Token',
                 data: loginData
-                //dataType: 'json'
             }).done(function (data) {
-                //$('#value1').text(data.access_token);
+                //$('#loginId').attr('href', 'Home/aa');
+                document.getElementsByClassName('loginClass').innerHTML = "aaa";
                 apitoken = data.access_token;
                 sessionStorage.setItem('apitoken', apitoken);
                 window.location.href = "/Home/Index";

@@ -6,9 +6,6 @@
         <title>@ViewBag.Title - Netaş API</title>
         @Styles.Render("~/Content/css")
         @Scripts.Render("~/bundles/modernizr")
-      
-        <link rel="stylesheet" type="text/css" href="~/Content/login.css">
-        
     </head>
     <body>
         <div class="navbar navbar-inverse navbar-fixed-top">
@@ -26,7 +23,7 @@
                         <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     </ul>*@
                     <ul class="nav navbar-nav navbar-right">
-                        <li>@Html.ActionLink("Log In", "LogIn", "Home")</li>
+                        <li>@Html.ActionLink("Log In", "LogIn", "Home", null, new { @class = "loginClass"})</li>
                     </ul>
                 </div>
             </div>
