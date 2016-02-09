@@ -4,28 +4,48 @@
 
 
 
+<ul>
+    <li>
+        <h4>Location</h4>
         <ul>
-            <li>
-                <h4>Project</h4>
-                <a onclick="sendRequest()">/api/projects</a>
-            </li>
-            <li>
-                <h4>Task</h4>
-                <a onclick="sendRequest()">/api/tasks</a>
-            </li>
-            <li>
-                <h4>Resource</h4>
-                <a onclick="sendRequest()">/api/resources</a>
-            </li>
-            <li>
-                <h4>Location</h4>
-                <a onclick="sendRequest()">/api/locations</a>
-            </li>
-            <li>
-                <h4>Equipment</h4>
-                <a onclick="sendRequest()">/api/equipments</a>
-            </li>
+            <li><a onclick="sendRequest('GET', 'location')">GetLocations()</a></li>
+            <li><a onclick="sendRequest('GET', 'location/' + $('#value1').val())">GetLocation()</a></li>
+            <li><a onclick="sendRequest('POST', 'location')">CreateLocation()</a></li>
+            <li><a onclick="sendRequest('PUT', 'location/' + $('#value1').val())">UpdateLocation()</a></li>
+            <li><a onclick="sendRequest('DELETE', 'location/' + $('#value1').val())">DeleteLocation()</a></li>
         </ul>
+    </li>
+    <li>
+        <h4>Task</h4>
+        <ul>
+            <li><a onclick="sendRequest('GET', 'task')">GetTasks()</a></li>
+            <li><a onclick="sendRequest('GET', 'task/' + $('#value1').val())">GetTask()</a></li>
+            <li><a onclick="sendRequest('POST', 'task')">CreateTask()</a></li>
+            <li><a onclick="sendRequest('PUT', 'task/' + $('#value1').val())">UpdateTask()</a></li>
+            <li><a onclick="sendRequest('DELETE', 'task/' + $('#value1').val())">DeleteTask()</a></li>
+        </ul>
+    </li>
+    <li>
+        <h4>Equipment</h4>
+        <ul>
+            <li><a onclick="sendRequest('GET', 'equipment')">GetEquipments()</a></li>
+            <li><a onclick="sendRequest('GET', 'equipment/' + $('#value1').val())">GetEquipment()</a></li>
+            <li><a onclick="sendRequest('POST', 'equipment')">CreateEquipment()</a></li>
+            <li><a onclick="sendRequest('PUT', 'equipment/' + $('#value1').val())">UpdateEquipment()</a></li>
+            <li><a onclick="sendRequest('DELETE', 'equipment/' + $('#value1').val())">DeleteEquipment()</a></li>
+        </ul>
+    </li>
+    <li>
+        <h4>Resource</h4>
+        <ul>
+            <li><a onclick="sendRequest('GET', 'resource')">GetResources()</a></li>
+            <li><a onclick="sendRequest('GET', 'resource/' + $('#value1').val())">GetResource()</a></li>
+            <li><a onclick="sendRequest('POST', 'resource')">CreateResource()</a></li>
+            <li><a onclick="sendRequest('PUT', 'resource/' + $('#value1').val())">UpdateResource()</a></li>
+            <li><a onclick="sendRequest('DELETE', 'resource/' + $('#value1').val())">DeleteResource()</a></li>
+        </ul>
+    </li>
+</ul>
 
 @*<select id="method">
         <option value="get">GET</option>
@@ -34,8 +54,20 @@
     </select>
     <input type="button" value="LogIn" onclick="logIn()" />
     <input type="button" value="Send Request" onclick="sendRequest()" />*@
-@*<span id='value1'>(Result)</span>*@
-<span id='value2'>(Result)</span>
+
+<label style="width: 200px;">ID: </label>
+<input id="value1" type="text" />
+<br/>
+<label style="width: 200px;">JSON Input : </label>
+<input id="value3" type="text" />
+<br/>
+<label style="width: 200px;">JSON Output : </label>
+<span id='value2' style="width: 100%"></span>
+
+@*<textarea id="value2" rows="50" cols="100" style="width: 50%"></textarea>*@
+
+
+@*<inp id='value2'></inp>*@
 
 <script src="~/Scripts/angular.js"></script>
 
@@ -54,45 +86,48 @@
 
         var apitoken = sessionStorage.getItem('apitoken');
         var a = '';
-        function sendRequest() {
+        function sendRequest(method, model) {
             var headers = {};
             if (apitoken) {
                 headers.Authorization = 'Bearer ' + apitoken;
             }
 
             $.ajax({
-                type: 'GET',
-                url: urlPrefix + '/api/location',
-                headers: headers
+                type: method,
+                url: urlPrefix + '/api/' + model,
+                headers: headers,
+                data: $('#value3').val() == '' ? '' : JSON.parse($('#value3').val())
             }).done(function (data) {
-                $('#value2').text(JSON.stringify(data));
+                $('#value2').text(JSON.stringify(data, null, 2));
+                $('#value1').text = '';
+                $('#value3').text = '';
             }).error(function (jqXHR, textStatus, errorThrown) {
                 $('#value2').text(jqXHR.responseText || textStatus);
             });
         };
 
-        function logIn() {
-            var method = $('#method').val();
+        //function logIn() {
+        //    var method = $('#method').val();
 
-            var xhr = createCORSRequest(method, urlPrefix + '/Token');
-            if (!xhr) {
-                throw new Error('CORS not supported');
-            }
+        //    var xhr = createCORSRequest(method, urlPrefix + '/Token');
+        //    if (!xhr) {
+        //        throw new Error('CORS not supported');
+        //    }
 
-            xhr.send();
+        //    xhr.send();
 
-            $.ajax({
-                type: method,
-                url: urlPrefix + '/Token',
-                data: loginData,
-                dataType: 'json'
-            }).done(function (data) {
-                //$('#value1').text(data.access_token);
-                apitoken = data.access_token;
-            }).error(function (jqXHR, textStatus, errorThrown) {
-                $('#value1').text(jqXHR.responseText || textStatus);
-            });
-        }
+        //    $.ajax({
+        //        type: method,
+        //        url: urlPrefix + '/Token',
+        //        data: loginData,
+        //        dataType: 'json'
+        //    }).done(function (data) {
+        //        //$('#value1').text(data.access_token);
+        //        apitoken = data.access_token;
+        //    }).error(function (jqXHR, textStatus, errorThrown) {
+        //        $('#value1').text(jqXHR.responseText || textStatus);
+        //    });
+        //}
 
         function createCORSRequest(method, url) {
             var xhr = new XMLHttpRequest();

@@ -122,8 +122,6 @@
                 url: urlPrefix + '/Token',
                 data: loginData
             }).done(function (data) {
-                //$('#loginId').attr('href', 'Home/aa');
-                document.getElementsByClassName('loginClass').innerHTML = "aaa";
                 apitoken = data.access_token;
                 sessionStorage.setItem('apitoken', apitoken);
                 window.location.href = "/Home/Index";
